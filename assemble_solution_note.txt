@@ -49,6 +49,100 @@ jmp ax
 (3) 12H	0012H
 (5) 124EH
 
+mov bx，1000H
+mov ds,bx
+mov al,[0]
+ 1000H x 16 + 0 = 物理地址（唯一的内存单元）
+[...] 表示一个内存单元，[0] 中的0表示内存单元的偏移地址。
+我们知道只知道偏移地址时无法定位一个内存单元的，那么内存单元的段地址在哪里呢？
+指令执行时，6086CPU 自动取ds中的数据为内存单元的段地址。
+
+所以说要访问一个内存单元：
+1.现将段地址放入一个通用寄存器
+	mov bx，1000H
+2.将通用寄存器中的内容放入段寄存器DS
+	mov ds,bx
+3.指明取那个偏移地址上的内容放入寄存器中
+	mov al,[0]
+在8086 中不能直接将数据放入段寄存器中。
+
+
+3.2
+
+将al中的值放入地址10000H中。
+	mov bx,1000H
+	mov ds,bx
+	mox [0],al
+	
+3.1
+(1)
+	AX	2662H
+	BX	E626H
+	AX	E626H
+	AX	2662H
+	BX	D6E6H
+	AX	FD48H
+(2)
+	mov ax,6622H	AX = 6622H BX = 0
+	jmp 0FF0:0100	CS = 0FF0H  IP = 0100H
+	mov ax,2000H	CS = 1000H	IP = 0000H	AX = 2000H
+	mov ds,ax		CS = 1000H	IP = 0003H	AX = 2000H	DS = 2000H
+	mov ax,[0008]	CS = 1000H	IP = 0005H	AX = C389H	DS = 2000H
+	mov ax,[0002]	CS = 1000H	IP = 0008H  AX = EA66H	DS = 2000H
+	
+3.7 CPU提供栈机制
+
+栈的位置由两个寄存器确定	SS:SP
+	SS ：栈段寄存器
+	SP : 寄存器（总是指向栈顶），入栈 sp-2,出栈 sp+2.
+
+	换一个角度看，在任意时刻，SS:SP 指向栈顶元素，当栈为空时，栈中没有元素，
+也就是不存在元素，所以SS:SP只能指向栈最底部单元下面的单元。
+	栈最底部字单元的地址为1000:000E,所以栈为空时，SP = 0010H.
+	
+现在就产生一个问题如何去防止栈越界访问数据？
+	8086CPU 并没有记录栈的大小的寄存器，也不会去检测，所以越栈空间访问时非常危险的。
+	
+	3.9
+		mov ax,1000H
+		mov ss,ax
+		mov sp,0010H
+		
+		mov ax,001AH
+		mov bx,001bH
+		push ax
+		puah bx
+		
+		pop ax 
+		pop bx 
+	3.10
+		mov ax,1000H
+		mov ss,ax
+		mov sp,0002H
+		
+		mov ax,2266H
+		push ax 
+	3.2
+		(1)
+			mov ax,2000H
+			mov ss,ax
+			mov sp,0010H
+		(2)
+			mov ax,1000H
+			mov ss,ax
+			mov sp,0010H
+		
+	
+	
+
+
+	
+
+	
+
+
+
+
 
 
 
