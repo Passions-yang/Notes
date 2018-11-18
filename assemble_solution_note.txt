@@ -150,6 +150,34 @@ loop 指令，每次执行一次loop， (cx) = (cx) -1; cx寄存器中的值自�
 	在汇编中大于 9fffH 的数据有很多比如 A000H,A001H... D000H...FFFF等，在进行汇编编程的时候必须在前面带上0
 
 	
+一个程序应该从哪里开始，到哪里运行结束呢？
+		如果不指定的情况下，他会根据CS:IP 计算一个程序运行的开始地方，去运行指令。
+		我们在大多数情况下需要指定程序运行的起始地点，所以就不必须指定它。一次这就是end的一个作用
+	end:
+		1.end可以通知程序结束。
+		2.end可以指明编译器程序的入口地址。
+		参照以下代码：程序是从hh地方开始运行的，并不是从start处开始运行，程序会将代码段中的数据定义进行初始化
+			但是，他并不会运行mov bx,21这条语句。初始化bx为21.
+		assume cs:code
+		code segment
+			dw 0123h,0456h,0789h,0abch,0defh,0fedh,0cbah
+		 
+			start:mov bx,21
+			hh:mov ax,0
+			
+			   mov cx,7
+			  s:add ax,cs:[bx]
+			   add bx,2
+			   loop s  
+				
+			   mov ax,4c00h
+			   int 21h
+			  
+		code ends
+		end hh
+    
+    
+    
 		
 	
 	
