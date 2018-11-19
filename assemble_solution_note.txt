@@ -175,6 +175,29 @@ loop 指令，每次执行一次loop， (cx) = (cx) -1; cx寄存器中的值自�
 			  
 		code ends
 		end hh
+
+		
+7 [bx+idata]
+
+8086 提供这种寻址方式 mov ax,[bx+200] ====>> (ds) x 16 + (bx) + 200
+该指令也可以写成：
+				mov ax,[200+bx]
+				mov ax,200[bx]
+				mov ax,[bx].200
+	这种方式为c语言中数组寻址提供了汇编机制。
+	
+	int main()
+	{
+		char a[] = "BaSic";
+		char b[] = "MinIX";
+		int i = 0;
+		do(
+			a[i] &= 0xDF;
+			b[i] |= 0x20;
+		)while(i < 5)
+		printf("%s,%s",a,b);
+	}
+
     
     
     
