@@ -197,6 +197,99 @@ loop 指令，每次执行一次loop， (cx) = (cx) -1; cx寄存器中的值自�
 		)while(i < 5)
 		printf("%s,%s",a,b);
 	}
+	
+		第八章 处理数据的两个基本问题
+		
+	1.数据在什么地方
+	2.处理的数据有多长
+
+1.数据在什么地方
+		8086 常用寄存器如下：
+			reg: ax,bx,cx,dx,ah,al,bh,bl,ch,cl,dh,dl,sp,bp,si,di;
+			sreg: ds,ss,cs,es
+		(1)在8086cpu中只用四个寄存器可以用来进行内存单元的寻址：bx,si,di,bp
+			例如：mov ax,[bx]
+					mov ax,[bx,si]
+					mov ax,[bx+di]
+					mov ax,[bp]
+					等
+			错误的指令是：mov ax,[cx]
+							mov ax,[ax]
+							mov ax,[dx]
+							mov ax,[dx]
+		(2) 在[...]中，这四个寄存器都可以单独出现，或者组合出现。但是si和di不能同时出现
+						bx和bp不能同时出现。
+						
+						例如：下面指令就是错误的
+								mov ax,[si+di]
+								mov ax,[bx+bp]
+		(3) 只要在[...]中使用寄存器，而指令中没有显示的给出段地址，段地址就默认在ss段中。
+			例如： mov ax,[bp]		（ax）= （ss）x 16 + (bp)
+					mov ax,[bp+idata] 	（ax）= （ss）x 16 + (bp) + idata
+					mov ax,[bp+si+idata]	（ax）= （ss）x 16 + (bp) + (si) + idata
+
+			
+		8086 中寻址方式总结：
+				1.直接寻址	mov ax,1
+				2.寄存器间接寻址	mov ax,[bx]
+				3.寄存器相对寻址	mov ax,[bx + idata]
+				4.基址变址寻址		mov ax,[bx+si]
+				5.相对基址变址寻址	mov ax,[bx+si+idata] mov ax,[bp + di +idata]
+2.指令数据有多长？
+	(1) 通过寄存器名，指明要处理数据的尺寸
+		例如： mov ax,1		mov al,1
+	(2) 在没有寄存器名称的情况下，如何知道呢？
+		用操作符X ptr 来指明内存单元的长度，X在汇编中可以是word 或 byte
+		
+		mov word ptr ds:[0],1	指明将 1 存放在[0][1] 十六位上
+		mov byte ptr ds:[0],1	指明将 1 存放在[0] 八位上
+	(3) 其他方法
+		有些指令会自动默认是字单元还是字节单元，比如，push [1000h] 就不用指明访问的是字还是字节。
+		因为push 默认指令只进行字操作。
+		
+			8.7 div 指令
+			
+	(1)除数：有八位和十六位两种，在一个reg或者内存单元中。
+	(2)被除数：默认放在AX或者DX和AX中。如果除数为8位，被除数位16位，存放在AX中。
+		如果除数为16位，被除数位32位，在DX和AX中存放，DX存放高16位，AX存放低十六位。
+	(3) 结果：如果除数为8位，则AL存储除法操作的商，AH存放除法操作的余数。
+			如果除数为16位，则AX存储除法操作的商，DX存储除法操作的余数。
+	
+	格式如下：
+		div reg
+		div 内存单元
+		
+	div byte ptr ds:[0]
+	含义：(al) = (ax)/((ds)x16 + 0) 的商
+		  (ah) = (ax)/((ds)x16 + 0) 的余数
+		  
+	div word ptr es:[0]
+	含义：(ax) = [(dx)x 10000H + (ax)]/((es)x 16 + 0) 的商
+			(dx) = [(dx)x 10000H + (ax)]/((es)x 16 + 0) 的余数
+			
+			
+			8.8 双字节 dd
+	
+	以前使用db 字节，dw 字，dd用来定义双字类型。例如：
+		db 1
+		dw 1
+		dd 1
+		
+	用计算机完成 div 计算data 段中第一个数据除以第二个数据后的结果，商存在第三个数据的存储单元中。
+		data segment
+			dd 100001
+			dw 100
+			dw 0
+		data ends
+		
+		mov ax，data
+		mov ds,ax
+		mov ax,ds:[0]
+		mov dx,ds:[2]
+		div word ptr ds:[4]
+		mov ds:[6],ax		;将商存储在 第三个字节中。
+			
+
 
     
     
