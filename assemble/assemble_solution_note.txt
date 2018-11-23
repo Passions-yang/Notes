@@ -314,6 +314,7 @@ loop 指令，每次执行一次loop， (cx) = (cx) -1; cx寄存器中的值自�
 		5. 中断
 		
 		
+	hello world
 		
 		
 			
