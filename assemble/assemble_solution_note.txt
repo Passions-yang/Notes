@@ -413,7 +413,72 @@ loop 指令，每次执行一次loop， (cx) = (cx) -1; cx寄存器中的值自�
 						code ends
 						end start
 						
+				10.1 ret 和 retf指令
+		
+		ret指令用于栈中的数据，修改ip的内容，从而实现近转移。
+		retf指令使用栈中的数据，修改CS：IP的内容，从而实现远转移
 						
+		cpu执行ret指令时，执行下面两个指令：
+		1. (IP) = (SS) * 16 + (SP)		|| ==》相当于pop IP 
+		2. (SP) = (SP) + 2				||
+		
+		CPU执行retf指令时，执行下面四个指令：
+		1. (IP) = (ss) * 16 + sp		|| ==> 相当于 pop IP
+		2. (SP) = (SP)+2				||
+		3. (CS) = (SS) * sp + sp		|| ==> 相当于 pop CS
+		4. (SP) = (SP + 2				||
+		
+				10.2 call指令
+				
+		CPU执行call指令时，进行两步操作：
+		
+		1.将当前的IP或CS和IP压入栈中。
+		2.转移
+		call指令不能实现短转移，除此之外，call和jmp指令实现转移方法相同。
+		
+				10.3 根据位移进行转移的CALL指令
+		call 标号
+		
+		1. (SP) = (sp) - 2
+			(SS) * 16 + (SP) = (IP)
+		2.	(IP) = (IP) + 16 位位移
+		
+		call 标号 ===》 push IP  jmp naer ptr 标号。
+		
+				10.4 转移的目的地址在指令中的CALL指令
+				
+				call far ptr 标号 ===》实现段间转移
+			1.先入栈push CS
+			2.再入栈IP
+			3.将当前的CS,IP更改为标号中的段地址和IP地址。
+					例如：push CS
+							push IP
+							jmp far ptr 标号
+							
+				10.5 转移地址在寄存器中的CALL指令
+				
+			1. 进栈			push IP 
+			2. 修改IP		jmp reg
+			
+				10.6 转移地址在内存中
+				
+			1. push CS
+			2. push IP
+			3. jmp dword ptr 内存单元地址
+			
+			call dword ptr ds:[0]
+			
+			
+		
+			
+			
+		
+		
+		
+		
+		
+		
+		
 				
 					
 			
