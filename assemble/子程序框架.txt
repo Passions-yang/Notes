@@ -1,0 +1,19 @@
+子程序框架如下：
+	assume cs:code
+	code segment
+		main:
+			:
+			call sub1
+			:
+			mov ax,4c00h
+			int 21h
+		sub1:
+			:
+			call sub2
+			:
+			ret 
+		sub2:
+			:
+			ret 
+	code ends
+	end main
