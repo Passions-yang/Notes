@@ -461,12 +461,50 @@ loop 指令，每次执行一次loop， (cx) = (cx) -1; cx寄存器中的值自�
 			2. 修改IP		jmp reg
 			
 				10.6 转移地址在内存中
-				
-			1. push CS
-			2. push IP
-			3. jmp dword ptr 内存单元地址
-			
+						
 			call dword ptr ds:[0]
+				例如：1. push CS
+						2. push IP
+						3. jmp dword ptr 内存单元地址
+			call word ptr ds:[0]
+						2. push IP
+						3. jmp word ptr 内存单元地址
+						
+所以此时就可以实现子程序了：
+	子程序框架如下：
+		assume cs:code
+		code segment
+			main:
+				:
+				call sub1
+				:
+				mov ax,4c00h
+				int 21h
+			sub1:
+				:
+				call sub2
+				:
+				ret 
+			sub2:
+				:
+				ret 
+		code ends
+		end main
+				10.8 mul 指令
+		(1)两个树相乘：要不都是8位，要不都是16位。如果八位一个默认放在al中。另一个放在8位寄存器中、
+			或者内存单元中。如果是十六位，一个默认在16位中，另一个在16位中或者内存单元中。
+		(2)结果：如果是八位，默认放在AX中，如果是十六位，高位放在DX中，低位放在AX中。
+			
+			mul reg	
+					例如：mul bl
+			mul 内存单元
+					例如：mul word ptr ds:[0]
+							mul byte ptr ds:[0]
+			
+			
+			
+		
+		
 			
 			
 		
