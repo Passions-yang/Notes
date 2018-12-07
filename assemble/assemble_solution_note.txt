@@ -490,7 +490,7 @@ loop 指令，每次执行一次loop， (cx) = (cx) -1; cx寄存器中的值自�
 				ret 
 		code ends
 		end main
-				10.8 mul 指令
+							10.8 mul 指令
 		(1)两个树相乘：要不都是8位，要不都是16位。如果八位一个默认放在al中。另一个放在8位寄存器中、
 			或者内存单元中。如果是十六位，一个默认在16位中，另一个在16位中或者内存单元中。
 		(2)结果：如果是八位，默认放在AX中，如果是十六位，高位放在DX中，低位放在AX中。
@@ -500,13 +500,88 @@ loop 指令，每次执行一次loop， (cx) = (cx) -1; cx寄存器中的值自�
 			mul 内存单元
 					例如：mul word ptr ds:[0]
 							mul byte ptr ds:[0]
-			
-			
-			
+							
+							10.10 参数和结果传递问题
 		
 		
 			
 			
+							第十一章  标志寄存器
+				
+				ZF ： 记录相关指令执行后，其结果是否为0，如果是0，则ZF = 1
+				PF :  奇偶标志位，记录相关指令执行后，如果其结果所有位数中1 的个数是否为偶数，如果是偶数PF = 1
+				SF ： 符号标志位，记录相关结果执行后，其结果是否为负，如果为负，SF=1
+				
+					影响标志位的指令为：add,sub,mul,div,inc,or,and
+				
+				监测点11.1
+					ZF = 1 PF = 1 SF = 0
+					ZF = 1 PF = 1 SF = 0
+					ZF = 1 PF = 1 SF = 0
+					ZF = 1 PF = 1 SF = 0
+					
+					
+					ZF = 0 PF = 1 SF = 0
+					ZF = 0 PF = 1 SF = 0
+					
+									CF	OF	SF	ZF	PF
+					sub al,al 		0	0	0	1	1
+					mov al 10H		0	0	0	1	1
+					add al,90H		0	0	1	0	1	
+					mov al,80H		0	0	1	0	1
+					add al,80H		1	1	0	1	1
+					mov al,0FCH		1	1	0	1	1
+					add al,05H		1	0	0	0	0
+					mov al,7DH		1	0	0	0	0
+					add al,0BH		0	1	1	0	1
+				
+				CF	: 进位标志位，当进行无符号计算时，记录最高有效位向更高位的进位值。或者错位置。
+				OF	: 溢出标志位，是对有符号数而言
+						
+						adc : 带进位加法指令。
+						
+						CMP 指令：
+							
+							je 			等于则转移			zf = 1
+							jne			不等于则转移  		zf = 0
+							jb			低于则转移			cf = 1
+							jnb			不低于则转移		cf = 0
+							ja			高于则转移			cf = 0 	且 zf = 0
+							jna			不高于则转移		cf = 1 	或 zf = 1
+						(1)
+									jb	s0
+									ja s0
+						(2)
+									jna s0
+									jnb s0
+									
+				DF ：方向标志位，在串处理中，控制每次si,di的增减。
+					df = 0  每次操作后si,di递增
+					df = 1 	每次操作后si,di递减。
+					
+					cld 指令： 将df置为0
+					std 指令： 将df置为1
+					
+				movsb 串传输指令：
+					执行它相当于：
+						(1) ((es) * 16 + (di)) = ((es) * 16 + (si))
+						(2) 如果df = 0 则：(si) = (si) + 1
+										   (di) = (di) + 1
+						使用方法：rep movsb   传送一个字节
+									rep movsw  传送一个字 相应的 (si) = (si) + 2 di同理
+						
+						rep movsb ===》 s :movsw
+											loop s
+							所以依赖于循环次数CX中的值。
+							
+				
+									
+					
+				
+				
+							
+							
+		
 		
 			
 			
