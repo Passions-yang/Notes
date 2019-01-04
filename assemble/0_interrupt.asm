@@ -28,8 +28,12 @@ code segment
         mov ax,10
         mov dx,10
         mov bx,0
-        div bx       
-        ;正常结束
+        div bx      ;触发除0中断后，它会保存状态寄存器的值
+        ;并将CS,IP入栈，所以在执行完中断处理程序之后，中断处理程序需要
+        ;返回到原先程序运行处。    
+        ;正常结束 
+        mov ax,10
+        
         mov ax,4c00H 
         ;除法21号中断
         int 21h
@@ -37,7 +41,12 @@ code segment
     do0:jmp short do0start
         db "divide error!",0
         
-do0start:mov ax,0
+do0start:push ax   ;保存现场
+        push bx
+        push cx
+        push dx
+        
+        mov ax,0
         mov ds,ax
         mov si,202H     ;设置ds:si指向字符串
         
@@ -55,9 +64,13 @@ do0start:mov ax,0
         inc si
         add di,2
         jmp s
-      ok:nop  
-        mov ax,4c00H
-        int 21H
+      ok:nop  ;恢复现场
+        pop dx
+        pop cx
+        pop bx
+        pop ax
+        
+        iret  ;使用iret会将，CS,IP，状态寄存器出栈，恢复现场
     do0end:nop
 code ends
 end main         
